@@ -17,43 +17,23 @@ from api.utils.settings import settings
 
 app = FastAPI(title="Afrivia API")
 
-https_only = settings.PYTHON_ENV == "prod"
 
+# TODO Is this useful?
 app.add_middleware(
     SessionMiddleware,
     secret_key=settings.SECRET_KEY,
-    same_site="strict" if https_only else "lax",
-    https_only=https_only,
+    same_site="none",
+    https_only=False,
     max_age=settings.JWT_REFRESH_EXPIRY * 24 * 60 * 60,
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-routes_with_credentials = [
-    "/api/v1/auth/login",
-    "/api/v1/auth/register",
-    "/api/v1/auth/register-admin",
-    "/api/v1/auth/refresh-token"
-    "/api/v1/auth/logout"
-]
-
-# Apply CORS middleware to specific routes
-@app.middleware("http")
-async def cors_middleware(request, call_next):
-    response = await call_next(request)
-
-    # Check the request path and apply CORS middleware accordingly
-    if request.url.path in routes_with_credentials:
-        response.headers["Access-Control-Allow-Origin"] = settings.APP_URL
-
-    return response
-
 
 app.include_router(api_version_one)
 
