@@ -44,7 +44,7 @@ jobs:
 
       - name: Decode and create .env file
         run: |
-          echo ${{ env.ENV }} | base64 -d > .env
+          echo '${{ env.ENV }}' | base64 -d > .env
 
       - name: Update .env with dynamic port
         run: |
