@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      ENV: ${{ secrets.STAGING_ENV_BASE64 }}
+      STAGING_SECRET: ${{ secrets.STAGING_ENV_BASE64 }}
 
     services:
       postgres:
@@ -44,8 +44,19 @@ jobs:
 
       - name: Decode and create .env file
         run: |
-          echo '${{ env.ENV }}' | base64 -d > .env
-
+          # If the secret is missing, this will fail early
+          if [ -z "$STAGING_SECRET" ]; then
+            echo "Error: STAGING_ENV_BASE64 secret is empty or not found."
+            exit 1
+          fi
+          
+          echo "$STAGING_SECRET" | base64 -d > .env
+      - name: Verify file exists
+        run: |
+          ls -la .env
+          # Check file size to ensure it's not 0
+          [ -s .env ] && echo ".env is populated" || exit 1
+          
       - name: Update .env with dynamic port
         run: |
           sed -i "s/DB_PORT=.*/DB_PORT=${{ job.services.postgres.ports[5432] }}/" .env
