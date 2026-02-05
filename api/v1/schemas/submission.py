@@ -74,11 +74,3 @@ class PaginatedResponseModelSchema(BaseSuccessResponseSchema):
 
 class PostSubmissionResponseModelSchema(BaseSuccessResponseSchema):
     data: PostSubmissionResponseSchema
-
-
-class GetSubmissionForModResponseModelSchema(BaseSuccessResponseSchema):
-    data: RetrieveSubmissionForModSchema
-
-
-class GetListOfSubmissionForModResponseModelSchema(BaseSuccessResponseSchema):
-    data: list[RetrieveSubmissionForModSchema]
