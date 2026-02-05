@@ -3,7 +3,6 @@ from datetime import datetime
 from api.v1.schemas.african_countries_enum import AfricanCountriesEnum as ACE
 from api.v1.schemas.base_schemas import BaseSuccessResponseSchema
 from enum import Enum
-from uuid import UUID
 
 
 class DifficultyEnum(str, Enum):
@@ -103,7 +102,3 @@ class GetListOfCountriesResponseModelSchema(BaseSuccessResponseSchema):
 
 class GetListOfCategoriesResponseModelSchema(BaseSuccessResponseSchema):
     data: list[CategoryEnum]
-
-
-class AlterModForSubmissionSchema(BaseModel):
-    moderator_id: str = Field(min_length=36, max_length=36)
