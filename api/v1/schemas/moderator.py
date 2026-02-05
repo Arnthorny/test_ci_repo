@@ -94,7 +94,3 @@ class ReturnModeratorDataForAdmin(CreateModeratorResponseSchema):
 
 class RetrieveModeratorsModelResponseSchema(BaseSuccessResponseSchema):
     data: list[ReturnModeratorDataForAdmin]
-
-
-class RetrieveSingleModeratorModelResponseSchema(BaseSuccessResponseSchema):
-    data: ReturnModeratorDataForAdmin

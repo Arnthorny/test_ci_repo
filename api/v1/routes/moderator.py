@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-from pydantic import EmailStr
-from typing import Union
 
 from api.db.database import get_db
 from api.utils.success_response import success_response
@@ -12,7 +10,6 @@ from api.v1.schemas.moderator import (
     ChangePasswordSchema,
     RetrieveModeratorsModelResponseSchema,
     ReturnModeratorDataForAdmin,
-    RetrieveSingleModeratorModelResponseSchema,
 )
 from api.v1.services.moderator import mod_service, Moderator
 from api.utils.logger import logger
@@ -62,45 +59,28 @@ def change_password(
 
 @moderator.get(
     "",
-    response_model=Union[
-        RetrieveModeratorsModelResponseSchema,
-        RetrieveSingleModeratorModelResponseSchema,
-    ],
+    response_model=RetrieveModeratorsModelResponseSchema,
     status_code=200,
 )
-async def retrieve_moderators(
-    email: EmailStr | None = None,
-    id: str | None = None,
+async def retrieve_all_moderators(
     db: Session = Depends(get_db),
     mod: Moderator = Depends(mod_service.get_current_admin),
 ):
     """Endpoint to retrieve all moderators.
-    Uses query params ?email or ?id if present.
 
     Args:
-        email(EmailStr): The email of the mod
-        id(str): The id of the mod
         db (Session, optional): The db session object.
         mod (Moderator): The admin making the request.
     """
-    if email is None and id is None:
-        mods = mod_service.fetch_all(db=db)
+    mods = mod_service.fetch_all(db=db)
 
-        resp_obj = [
-            ReturnModeratorDataForAdmin.model_validate(m.to_dict()) for m in mods
-        ]
-
-    elif email is not None:
-        mod = mod_service.fetch_by_email(db=db, email=email, raise_404=True)
-        resp_obj = ReturnModeratorDataForAdmin.model_validate(mod.to_dict())
-
-    elif id is not None:
-        mod = mod_service.fetch(db=db, id=id, raise_404=True)
-        resp_obj = ReturnModeratorDataForAdmin.model_validate(mod.to_dict())
+    validated_m_dict = [
+        ReturnModeratorDataForAdmin.model_validate(m.to_dict()) for m in mods
+    ]
 
     return success_response(
-        data=jsonable_encoder(resp_obj),
-        message="Successfully retrieved moderator(s)",
+        data=jsonable_encoder(validated_m_dict),
+        message="Successfully retrieved all moderators",
         status_code=200,
     )
 
