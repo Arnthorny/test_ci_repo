@@ -140,3 +140,4 @@ async def delete_single_trivia(
         db (Session, optional): The db session object.
     """
     status = trivia_service.delete(db=db, id=id)
+    print(status)

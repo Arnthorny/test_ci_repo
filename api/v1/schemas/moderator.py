@@ -86,11 +86,3 @@ class UpdateModeratorByAdminSchema(UpdateModeratorSchema):
 
 class DeactivateModeratorSchema(BaseModel):
     is_active: bool
-
-
-class ReturnModeratorDataForAdmin(CreateModeratorResponseSchema):
-    pending_submissions: list[str]
-
-
-class RetrieveModeratorsModelResponseSchema(BaseSuccessResponseSchema):
-    data: list[ReturnModeratorDataForAdmin]
