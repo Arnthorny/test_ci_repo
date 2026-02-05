@@ -16,7 +16,6 @@ from api.v1.services.submission import submission_service
 from api.utils.logger import logger
 from api.utils import responses
 
-assigned_submissions = APIRouter(prefix="/assigned-submissions", tags=["Submissions"])
 submissions = APIRouter(prefix="/submissions", tags=["Submissions"])
 
 
@@ -43,9 +42,7 @@ async def create_submission(
     )
 
 
-@assigned_submissions.get(
-    "", response_model=PaginatedResponseModelSchema, status_code=200
-)
+@submissions.get("", response_model=PaginatedResponseModelSchema, status_code=200)
 async def retrieve_submission_for_mods(
     status: Literal["pending", "approved", "rejected"] | None = None,
     page: Annotated[int | None, Query(gt=0)] = 1,
@@ -53,7 +50,7 @@ async def retrieve_submission_for_mods(
     db: Session = Depends(get_db),
     current_mod: Moderator = Depends(mod_service.get_current_mod),
 ):
-    """Endpoint to retrieves submissions assigned to a particular moderator\n
+    """This function retrieves submissions assigned to a particular moderator\n
 
     Args:\n
         status (Literal['pending', 'approved', 'rejected'] | None, optional): The kind of submissions to be retrieved. If None, retrieve all submissions. Defaults to None.\n
