@@ -44,7 +44,8 @@ class TestRetrieveSingleSubmissionForMods:
         mocker.patch.object(
             RetrieveSubmissionForModSchema, "model_validate", return_value=[]
         )
-        mocker.patch.object(submission_service, "fetch", return_value=subm)
+
+        db_session_mock.query().filter_by().first.return_value = subm
 
         response = client.get(ENDPOINT.format("submission-id"))
         assert response.status_code == 200
@@ -53,7 +54,7 @@ class TestRetrieveSingleSubmissionForMods:
     # Retrieve single nonexistent submission for a moderator
     def test_retrieve_single_submission_nonexistent(self, mocker: MockerFixture):
 
-        mocker.patch.object(submission_service, "fetch", return_value=None)
+        db_session_mock.query().filter_by().first.return_value = None
 
         response = client.get(ENDPOINT.format("non-existent-submission-id"))
         assert response.status_code == 404
@@ -66,7 +67,8 @@ class TestRetrieveSingleSubmissionForMods:
         mocker.patch.object(
             RetrieveSubmissionForModSchema, "model_validate", return_value=[]
         )
-        mocker.patch.object(submission_service, "fetch", return_value=subm)
+
+        db_session_mock.query().filter_by().first.return_value = subm
 
         response = client.get(ENDPOINT.format("submission-id"))
         assert response.status_code == 403
@@ -78,6 +80,7 @@ class TestRetrieveSingleSubmissionForMods:
     # Retrieve single submission for a unauthenticated user
     def test_retrieve_single_submission_unauthenticated(self, mocker: MockerFixture):
 
+        subm = mocker.Mock(question="Who are you?", moderator_id="unassigned_mod_id")
         mocker.patch.object(
             RetrieveSubmissionForModSchema, "model_validate", return_value=[]
         )
